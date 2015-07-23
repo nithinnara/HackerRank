@@ -53,6 +53,70 @@ void deleteStack(DynArrStack *S) {
     }
 }
 
+
+int IsFullQueue(DynArrQueue *Q) {
+    return ((Q->rear + 1)%Q->capacity == Q->front);
+}
+
+int IsEmptyQueue(DynArrQueue *Q) {
+    return (Q->front == -1);
+}
+
+int QueueSize(DynArrQueue *Q) {
+    return ((Q->capacity - Q->front + Q->rear + 1)% Q->capacity);
+}
+
+void ResizeQueue(DynArrQueue *Q)
+{
+    int size = Q->capacity;
+    Q->capacity *= 2;
+    Q->array = (struct node **) realloc(Q->array, Q->capacity);
+    if (!Q->array) return;
+    
+    if (Q->front > Q->rear) {
+        for (int i=0; i<Q->front; i++) {
+            Q->array[i+size] = Q->array[i];
+        }
+        Q->rear = Q->rear+size;
+    }
+}
+
+void EnQueue(DynArrQueue *Q,node *data)
+{
+    if(IsFullQueue(Q))
+        ResizeQueue(Q);
+    Q->rear = (Q->rear + 1)%Q->capacity;
+    Q->array[Q->rear] = data;
+    if (Q->front == -1) {
+        Q->front = Q->rear;
+    }
+}
+
+struct node* DeQueue(DynArrQueue *Q)
+{
+    if (IsEmptyQueue(Q)) {
+        return 0;
+    }
+    
+    node *data = nullptr;
+    data = Q->array[Q->front];
+    if (Q->front == Q->rear)
+        Q->front = Q->rear = -1;
+    else
+        Q->front = (Q->front + 1) % Q->capacity;
+    
+    return data;
+}
+
+void DeleteQueue(DynArrQueue *Q) {
+    if (Q) {
+        if (Q->array)
+            free(Q->array);
+        free(Q);
+    }
+}
+
+
 void Preorder(node *root) {
     
     struct DynArrStack * S = CreateStack();
@@ -199,6 +263,63 @@ void right_view(node * root)
     
     printf("%d%s",root->data," ");
     right_view(root->right);
+}
+
+void LevelOrder(node * root)
+{
+    struct node *temp;
+    struct DynArrQueue *Q = CreateQueue();
+    if (!root) return;
+    EnQueue(Q, root);
+    
+    while (!IsEmptyQueue(Q)) {
+        temp = DeQueue(Q);
+        printf("%d%s",temp->data," ");
+        
+        if (temp->left != NULL) {
+            EnQueue(Q, temp->left);
+        }
+        if (temp->right != NULL) {
+            EnQueue(Q, temp->right);
+        }
+    }
+    DeleteQueue(Q);
+}
+
+node * insert(node * root, int value)
+{
+    struct node *temp,*newNode;
+    newNode = (struct node *) malloc(sizeof(struct node));
+    newNode->left = newNode->right = NULL;
+    
+    struct DynArrQueue *Q = CreateQueue();
+    
+    if (!root) {
+        return root = newNode;
+    }
+    
+    EnQueue(Q, root);
+    
+    while (!IsEmptyQueue(Q)) {
+        temp = DeQueue(Q);
+        
+        if (temp->left) {
+            EnQueue(Q, temp->left);
+        }else{
+            temp->left = newNode;
+            DeleteQueue(Q);
+            break;
+        }
+        if (temp->right) {
+            EnQueue(Q, temp->right);
+        }else{
+            temp->right = newNode;
+            DeleteQueue(Q);
+            break;
+        }
+    }
+    DeleteQueue(Q);
+    return root;
 }
 
 int main(int argc, const char * argv[]) {

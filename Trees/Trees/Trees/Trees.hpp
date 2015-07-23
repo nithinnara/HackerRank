@@ -38,4 +38,22 @@ struct DynArrStack *CreateStack() {
     return S;
 }
 
+struct DynArrQueue {
+    int front,rear;
+    int capacity;
+    struct node** array;
+};
+
+struct DynArrQueue *CreateQueue(int N = 1) {
+    
+    struct DynArrQueue *S = (struct DynArrQueue *) malloc(sizeof(struct DynArrQueue));
+    if (!S) return NULL;
+    S->capacity = N;
+    S->front = S->rear = -1;
+    S->array = (struct node**) malloc(S->capacity * sizeof(struct node*));
+    if (!S->array) return  NULL;
+    return S;
+}
+
+
 #endif /* Trees_cpp */

@@ -12,11 +12,14 @@
 #include <stdio.h>
 #include <iostream>
 
+using namespace std;
+
 #define DEFAULT_SIZE 100
 
 struct node
 {
     int data;
+    char datas;
     node* left;
     node* right;
 };

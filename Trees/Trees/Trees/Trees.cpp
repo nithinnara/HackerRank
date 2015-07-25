@@ -322,6 +322,49 @@ node * insert(node * root, int value)
     return root;
 }
 
+void decode_huff(node * root,string s)
+{
+    struct node *temp;
+    temp = root;
+    
+    char stringArr[s.length()];
+    strcpy(stringArr, s.c_str());
+    
+    int i = 0;
+    while (i < sizeof(stringArr)) {
+        
+        if (stringArr[i] == '1')
+            temp = temp->right;
+        else if (stringArr[i] == '0')
+            temp = temp->left;
+        
+        if (temp->data != '\0') {
+            cout << temp->data;
+            temp = root;
+        }
+        
+        i++;
+    }
+}
+
+node * lca(node * root, int v1,int v2)
+{
+    if (root == NULL) return root;
+    
+    if (root->data == v1 || root->data == v2)
+        return root;
+    
+    node *left_lca  = lca(root->left, v1, v2);
+    node *right_lca = lca(root->right, v1, v2);
+    
+    // If both left & right exist, then this node is the LCA
+    if (left_lca && right_lca)
+        return root;
+    
+    // Else left or right subtree should be the LCA
+    return (left_lca != NULL)? left_lca: right_lca;
+}
+
 int main(int argc, const char * argv[]) {
     struct node *tree;
     
